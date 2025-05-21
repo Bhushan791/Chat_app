@@ -91,7 +91,11 @@ def handle_join():
     avatar = session.get('avatar')
     users[sid] = {'nickname': nickname, 'avatar': avatar}
     emit('user_list', list(users.values()), broadcast=True)
-    emit('chat_history', messages, room=sid)
+
+    # Only send message history to admin
+    if session.get('is_admin'):
+        emit('chat_history', messages, room=sid)
+
 
 @socketio.on('disconnect')
 def handle_disconnect():
