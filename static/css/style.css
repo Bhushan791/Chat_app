@@ -559,3 +559,179 @@ body {
         padding-top: 10px;
     }
 }
+
+/* ==== EXTRA RESPONSIVE FOR PHONES & TABLETS ==== */
+/* --- ADDED/UPDATED FOR FULL MOBILE/TABLET SUPPORT --- */
+@media (max-width: 480px) {
+    body {
+        align-items: flex-start;
+        overflow: auto;
+        min-height: 100vh;
+    }
+    .welcome-page .container {
+        width: 98vw;
+        min-width: unset;
+        max-width: 98vw;
+        padding: 18px 4vw;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .join-title {
+        font-size: 1.35rem;
+        margin-bottom: 16px;
+    }
+    .chat-page .chat-container {
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .sidebar {
+        width: 100vw;
+        min-width: 0;
+        max-width: 100vw;
+        padding: 8px 2vw;
+        font-size: 0.97rem;
+        border-radius: 0;
+        box-shadow: none;
+        max-height: 28vh;
+    }
+    .sidebar-title {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+    }
+    .admin-panel h4 {
+        font-size: 1rem;
+        margin-bottom: 7px;
+    }
+    .users-list, .admin-users-list {
+        padding-right: 2px;
+        font-size: 0.95rem;
+    }
+    .user-avatar, .message-avatar {
+        width: 34px;
+        height: 34px;
+        margin-right: 7px;
+        margin-left: 7px;
+    }
+    .chat-main {
+        border-radius: 0;
+        min-height: 68vh;
+    }
+    .chat-header {
+        padding: 12px 4vw;
+        font-size: 1.05rem;
+        border-radius: 0;
+    }
+    .chat-messages {
+        padding: 6px 1vw;
+        font-size: 0.95rem;
+        gap: 8px;
+    }
+    .message {
+        max-width: 99vw;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    .message-content {
+        padding: 8px 6px;
+        min-width: 0;
+        max-width: 90vw;
+        font-size: 0.95rem;
+    }
+    .message-header {
+        gap: 7px;
+        margin-bottom: 3px;
+    }
+    .message-nickname, .message-timestamp {
+        font-size: 0.93rem;
+    }
+    .message-text {
+        font-size: 0.95rem;
+    }
+    .message-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 7px;
+        padding: 8px 2vw;
+    }
+    .message-input {
+        padding: 10px 10px;
+        font-size: 1rem;
+        border-radius: 16px;
+    }
+    .send-btn {
+        padding: 10px 0;
+        font-size: 1rem;
+        border-radius: 16px;
+    }
+    .emoji-btn {
+        font-size: 1.4rem;
+    }
+    .admin-user-item {
+        font-size: 0.93rem;
+        padding: 6px 4px;
+        gap: 4px 0;
+    }
+    .admin-user-actions button,
+    .kick-btn, .mute-btn, .unmute-btn {
+        min-width: 60px;
+        font-size: 0.93rem;
+        padding: 6px 6px;
+        border-radius: 10px;
+    }
+    .typing-indicator {
+        font-size: 0.92rem;
+        margin: 2px 0;
+    }
+}
+
+/* For small tablets (portrait) */
+@media (max-width: 700px) {
+    .welcome-page .container {
+        width: 95vw;
+        min-width: unset;
+        max-width: 95vw;
+        padding: 20px 5vw;
+        border-radius: 8px;
+    }
+    .chat-page .chat-container {
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        border-radius: 0;
+    }
+    .sidebar {
+        width: 100vw;
+        min-width: 0;
+        max-width: 100vw;
+        padding: 10px 2vw;
+        font-size: 0.98rem;
+        border-radius: 0;
+        box-shadow: none;
+        max-height: 30vh;
+    }
+    .chat-main {
+        border-radius: 0;
+    }
+    .chat-header {
+        padding: 14px 3vw;
+        font-size: 1.2rem;
+    }
+    .chat-messages {
+        padding: 10px 2vw;
+        font-size: 0.98rem;
+        gap: 10px;
+    }
+    .message-content {
+        padding: 10px 8px;
+        max-width: 95vw;
+        font-size: 0.97rem;
+    }
+    .message-form {
+        padding: 10px 2vw;
+    }
+}
