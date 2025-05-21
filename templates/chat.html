@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="chat-page">
+    <script>const IS_ADMIN = {{ 'true' if is_admin else 'false' }};</script>
+
+    <div class="chat-container">
+        <aside class="sidebar">
+            <h3 class="sidebar-title">
+                <i class="fas fa-users"></i> Online Users
+            </h3>
+            <ul id="users-list" class="users-list"></ul>
+
+            {% if is_admin %}
+            <div class="admin-panel">
+                <h4><i class="fas fa-shield-alt"></i> Admin Controls</h4>
+                <ul id="admin-users-list" class="admin-users-list"></ul>
+            </div>
+            {% endif %}
+        </aside>
+
+        <main class="chat-main">
+            <header class="chat-header">
+                <div class="user-info">
+                    <img src="{{ avatar }}" onerror="this.src='/static/img/sus.jpeg'" alt="Avatar" class="user-avatar" />
+                    <h2>
+                        <i class="fas fa-comments"></i> Welcome, {{ nickname }}
+                        {% if is_admin %}
+                        <span class="admin-badge">ADMIN</span>
+                        {% endif %}
+                    </h2>
+                </div>
+            </header>
+
+            <section id="messages" class="chat-messages"></section>
+            <div id="typing-indicator" class="typing-indicator" style="display: none;"></div>
+
+            <form id="message-form" class="message-form" autocomplete="off">
+                <button type="button" id="emoji-btn" class="emoji-btn" title="Insert emoji">😊</button>
+                <input
+                    id="message-input"
+                    type="text"
+                    placeholder="Type your message here..."
+                    maxlength="500"
+                    required
+                    autocomplete="off"
+                    class="message-input"
+                />
+                <button type="submit" class="send-btn">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/emoji-picker.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+</body>
+</html>
