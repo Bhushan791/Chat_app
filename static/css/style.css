@@ -735,3 +735,43 @@ body {
         padding: 10px 2vw;
     }
 }
+
+
+/* Typing indicator styling */
+.typing-indicator {
+    font-style: italic;
+    color: #666;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    height: 24px; /* reserve space even when hidden */
+    user-select: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Hide by default */
+.typing-indicator[style*="display: none"] {
+    opacity: 0;
+    height: 0;
+    padding: 0 20px;
+    overflow: hidden;
+}
+
+/* Mute button styling */
+.mute-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.4rem;
+    color: #4a90e2;
+    cursor: pointer;
+    padding: 0 10px;
+    transition: color 0.3s ease;
+}
+
+.mute-btn:hover {
+    color: #357ABD;
+}
+
+/* Optional: style for muted state */
+.mute-btn.muted {
+    color: #888;
+}

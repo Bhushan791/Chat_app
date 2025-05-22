@@ -14,8 +14,10 @@ socketio = SocketIO(app)
 users = {}
 messages = []
 
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
+
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # ---------- ROUTES ----------
 
@@ -62,7 +64,7 @@ def admin_login():
         password = request.form.get('password', '').strip()
         if password == 'adminpass':  # set your admin password
             session['nickname'] = 'admin'
-            session['avatar'] = url_for('static', filename='img/sus.jpeg')  # ✅ Admin avatar
+            session['avatar'] = url_for('static', filename='img/sus.jpeg')  # Admin avatar
             session['is_admin'] = True
             return redirect(url_for('admin_chat'))
         else:
@@ -96,7 +98,6 @@ def handle_join():
     if session.get('is_admin'):
         emit('chat_history', messages, room=sid)
 
-
 @socketio.on('disconnect')
 def handle_disconnect():
     sid = request.sid
@@ -107,8 +108,10 @@ def handle_disconnect():
 def handle_message(data):
     nickname = session.get('nickname')
     avatar = session.get('avatar')
-    text = data.get('message', '')
-    timestamp = time.strftime('%Y-%m-%d %I:%M:%S %p')  # ✅ 12-hour format with AM/PM
+    text = data.get('message', '').strip()
+    if not text:
+        return  # Ignore empty messages
+    timestamp = time.strftime('%Y-%m-%d %I:%M:%S %p')  # 12-hour format with AM/PM
 
     msg = {
         'nickname': nickname,
@@ -120,6 +123,11 @@ def handle_message(data):
     if len(messages) > 100:
         messages.pop(0)
     emit('new_message', msg, broadcast=True)
+
+@socketio.on('typing')
+def handle_typing(data):
+    nickname = session.get('nickname')
+    emit('user_typing', {'nickname': nickname, 'isTyping': data.get('isTyping', False)}, broadcast=True, include_self=False)
 
 @socketio.on('admin_kick')
 def handle_admin_kick(data):
