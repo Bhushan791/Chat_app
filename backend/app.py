@@ -8,17 +8,23 @@ import subprocess
 import logging
 
 def create_app():
+    # Get the absolute path to the project root
+    current_dir = os.path.dirname(os.path.abspath(__file__))  # This is backend/
+    project_root = os.path.dirname(current_dir)  # Go up one level from backend/
+    
     app = Flask(__name__, 
-                template_folder='../templates',  # Point to templates in parent directory
-                static_folder='../static')       # Point to static in parent directory
+                template_folder=os.path.join(project_root, 'templates'),
+                static_folder=os.path.join(project_root, 'static'))
     
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback-secret-key-change-this')
-    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+    
+    # Updated paths using absolute paths
+    app.config['UPLOAD_FOLDER'] = os.path.join(project_root, 'static', 'uploads')
     app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max
 
-    VOICE_FOLDER = 'static/voice'
-    SNAP_FOLDER = 'static/snaps'
-    FILE_FOLDER = 'static/files'
+    VOICE_FOLDER = os.path.join(project_root, 'static', 'voice')
+    SNAP_FOLDER = os.path.join(project_root, 'static', 'snaps')
+    FILE_FOLDER = os.path.join(project_root, 'static', 'files')
     app.config['VOICE_FOLDER'] = VOICE_FOLDER
     app.config['SNAP_FOLDER'] = SNAP_FOLDER
     app.config['FILE_FOLDER'] = FILE_FOLDER
@@ -29,27 +35,37 @@ def create_app():
     users = {}
     messages = []
 
-    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'mp4', 'mov', 'gif', 'webm'}
+    # Updated allowed extensions - separated for avatar vs media files
+    AVATAR_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    MEDIA_EXTENSIONS = {'png', 'jpg', 'jpeg', 'mp4', 'mov', 'gif', 'webm'}
 
-    def allowed_file(filename):
-        return '.' in filename and \
-               filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    def allowed_file(filename, file_type='media'):
+        if not filename or '.' not in filename:
+            return False
+        extension = filename.rsplit('.', 1)[1].lower()
+        if file_type == 'avatar':
+            return extension in AVATAR_EXTENSIONS
+        return extension in MEDIA_EXTENSIONS
 
-    # Ensure folders exist
+    # Ensure folders exist with proper error handling
     for folder in [app.config['UPLOAD_FOLDER'], VOICE_FOLDER, SNAP_FOLDER, FILE_FOLDER]:
-        os.makedirs(folder, exist_ok=True)
+        try:
+            os.makedirs(folder, exist_ok=True)
+            app.logger.info(f"Directory ensured: {folder}")
+        except Exception as e:
+            app.logger.error(f"Failed to create directory {folder}: {e}")
 
     def convert_webm_to_mp3(input_path, output_path):
         command = [
-    'ffmpeg',
-    '-y',
-    '-i', input_path,
-    '-vn',
-    '-ar', '44100',
-    '-ac', '2',
-    '-b:a', '192k',
-    output_path
-]
+            'ffmpeg',
+            '-y',
+            '-i', input_path,
+            '-vn',
+            '-ar', '44100',
+            '-ac', '2',
+            '-b:a', '192k',
+            output_path
+        ]
 
         try:
             subprocess.run(command, check=True, capture_output=True)
@@ -69,19 +85,83 @@ def create_app():
                 return render_template('index.html', error="Username cannot contain 'admin'.")
 
             avatar = None
+            
+            # Enhanced avatar upload handling with debugging
             if 'avatar' in request.files:
                 file = request.files['avatar']
-                if file and allowed_file(file.filename):
-                    filename = secure_filename(f"{int(time.time())}_{file.filename}")
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    avatar = url_for('uploaded_file', filename=filename)
+                app.logger.info(f"Avatar upload attempt - Filename: {file.filename}")
+                
+                if file and file.filename:
+                    # Check file size first
+                    file.seek(0, os.SEEK_END)
+                    file_size = file.tell()
+                    file.seek(0)  # Reset file pointer
+                    
+                    app.logger.info(f"File size: {file_size} bytes")
+                    
+                    if file_size == 0:
+                        app.logger.warning("Empty file uploaded")
+                        return render_template('index.html', error="Please select a valid image file.")
+                    
+                    if file_size > 10 * 1024 * 1024:  # 10MB limit for avatars
+                        return render_template('index.html', error="Image file too large. Please choose a file under 10MB.")
+                    
+                    # Check file extension
+                    if not allowed_file(file.filename, 'avatar'):
+                        app.logger.warning(f"Invalid file extension: {file.filename}")
+                        return render_template('index.html', error="Please upload a PNG, JPG, JPEG, or GIF image.")
+                    
+                    # Generate secure filename with fallback
+                    original_filename = file.filename
+                    timestamp = int(time.time())
+                    secure_name = secure_filename(f"{timestamp}_{original_filename}")
+                    
+                    # Handle case where secure_filename returns empty string
+                    if not secure_name or secure_name == f"{timestamp}_":
+                        file_ext = original_filename.rsplit('.', 1)[1].lower() if '.' in original_filename else 'png'
+                        secure_name = f"{timestamp}_avatar.{file_ext}"
+                        app.logger.info(f"Used fallback filename: {secure_name}")
+                    
+                    # Ensure upload directory exists
+                    upload_path = app.config['UPLOAD_FOLDER']
+                    if not os.path.exists(upload_path):
+                        try:
+                            os.makedirs(upload_path, exist_ok=True)
+                            app.logger.info(f"Created upload directory: {upload_path}")
+                        except Exception as e:
+                            app.logger.error(f"Failed to create upload directory: {e}")
+                            return render_template('index.html', error="Server error. Please try again.")
+                    
+                    # Save the file
+                    file_path = os.path.join(upload_path, secure_name)
+                    try:
+                        file.save(file_path)
+                        app.logger.info(f"Avatar saved successfully: {file_path}")
+                        
+                        # Verify file was saved
+                        if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
+                            avatar = url_for('uploaded_file', filename=secure_name)
+                            app.logger.info(f"Avatar URL generated: {avatar}")
+                        else:
+                            app.logger.error("File save verification failed")
+                            avatar = None
+                            
+                    except Exception as e:
+                        app.logger.error(f"Error saving avatar file: {e}")
+                        return render_template('index.html', error="Failed to save image. Please try again.")
+                else:
+                    app.logger.info("No file selected or empty filename")
 
+            # Use default avatar if upload failed or no file provided
             if not avatar:
                 avatar = url_for('static', filename='img/default-avatar.png')
+                app.logger.info(f"Using default avatar: {avatar}")
 
             session['nickname'] = nickname
             session['avatar'] = avatar
             session['is_admin'] = False
+            
+            app.logger.info(f"User {nickname} joining with avatar: {avatar}")
             return redirect(url_for('chat'))
 
         return render_template('index.html')
@@ -120,7 +200,17 @@ def create_app():
 
     @app.route('/uploads/<filename>')
     def uploaded_file(filename):
-        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+        # Use absolute path
+        upload_folder = app.config['UPLOAD_FOLDER']
+        app.logger.info(f"Serving file: {filename} from {upload_folder}")
+        
+        # Security check
+        if not os.path.exists(os.path.join(upload_folder, filename)):
+            app.logger.warning(f"File not found: {filename}")
+            default_avatar_path = os.path.join(project_root, 'static', 'img')
+            return send_from_directory(default_avatar_path, 'default-avatar.png')
+        
+        return send_from_directory(upload_folder, filename)
 
     @app.route('/upload_voice', methods=['POST'])
     def upload_voice():
@@ -166,7 +256,7 @@ def create_app():
             return jsonify({'error': 'No file'}), 400
         
         file = request.files['file']
-        if not allowed_file(file.filename):
+        if not allowed_file(file.filename, 'media'):
             return jsonify({'error': 'File type not allowed'}), 400
 
         filename = secure_filename(f"{uuid.uuid4()}_{file.filename}")
