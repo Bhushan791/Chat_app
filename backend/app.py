@@ -41,15 +41,16 @@ def create_app():
 
     def convert_webm_to_mp3(input_path, output_path):
         command = [
-            r'C:\Users\Dell\Downloads\ffmpeg-7.1.1-full_build\ffmpeg-7.1.1-full_build\bin\ffmpeg.exe',
-            '-y',
-            '-i', input_path,
-            '-vn',
-            '-ar', '44100',
-            '-ac', '2',
-            '-b:a', '192k',
-            output_path
-        ]
+    'ffmpeg',
+    '-y',
+    '-i', input_path,
+    '-vn',
+    '-ar', '44100',
+    '-ac', '2',
+    '-b:a', '192k',
+    output_path
+]
+
         try:
             subprocess.run(command, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
