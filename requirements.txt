@@ -3,3 +3,4 @@ Flask-SocketIO==5.3.6
 python-socketio==5.11.2
 eventlet==0.35.2
 Werkzeug==3.0.2
+ffmepg==7.1.1

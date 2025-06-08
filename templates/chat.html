@@ -6,11 +6,14 @@
     <title>Chat Room</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
 </head>
+
 <body class="chat-page">
     <script>
-        const YOUR_NICKNAME = {{ nickname|tojson }};
-        const IS_ADMIN = {{ 'true' if is_admin else 'false' }};
+        window.YOUR_NICKNAME = {{ nickname|tojson }};
+        window.IS_ADMIN = {{ 'true' if is_admin else 'false' }};
     </script>
 
     <div class="chat-container">
@@ -35,7 +38,7 @@
                     <h2>
                         <i class="fas fa-comments"></i> Welcome, {{ nickname }}
                         {% if is_admin %}
-                        <span class="admin-badge">ADMIN</span>
+                        <span class="admin-badge">Bhushan</span>
                         {% endif %}
                     </h2>
                 </div>
@@ -48,6 +51,12 @@
                 <button type="button" id="emoji-btn" class="emoji-btn" title="Insert emoji">😊</button>
                 <button type="button" id="mute-btn" class="mute-btn" title="Mute/unmute sound" aria-label="Mute/unmute sound">
                     <i class="fas fa-volume-up"></i>
+                </button>
+                <button type="button" id="mic-btn" class="mic-btn" title="Record voice message" aria-label="Voice Message">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button type="button" id="snap-btn" class="snap-btn" title="Send file" aria-label="File Upload">
+                    <i class="fas fa-file-upload"></i>
                 </button>
                 <input
                     id="message-input"
@@ -62,11 +71,32 @@
                     <i class="fas fa-paper-plane"></i> Send
                 </button>
             </form>
+
+            <!-- Voice Recording Modal -->
+            <div id="voice-modal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span id="recording-indicator" style="color:red;">● Recording...</span>
+                    <span id="recording-timer">00:00</span>
+                    <button id="send-voice-btn">Send</button>
+                    <button id="cancel-voice-btn">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Emoji Picker Container -->
+            <div id="emoji-picker-container" class="emoji-picker-container" style="display: none;">
+                <div class="emoji-picker-header">
+                    <span>Choose an emoji</span>
+                    <button id="emoji-picker-close" class="emoji-picker-close">×</button>
+                </div>
+                <div class="emoji-picker-content" id="emoji-picker-content">
+                    <!-- Emojis will be populated here -->
+                </div>
+            </div>
         </main>
     </div>
 
     <script src="https://cdn.socket.io/4.5.3/socket.io.min.js" crossorigin="anonymous"></script>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="{{ url_for('static', filename='js/media.js') }}"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+# Ignore uploaded images and voices
+static/uploads/
+static/voice/
+static/files
+static/snaps
+.env
+*.env
+__pycache__/
+*.pyc
