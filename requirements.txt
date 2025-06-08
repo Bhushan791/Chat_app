@@ -4,3 +4,4 @@ python-socketio==5.8.0
 python-engineio==4.8.0
 eventlet==0.33.3
 Werkzeug==2.3.7
+python-dotenv

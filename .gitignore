@@ -7,3 +7,4 @@ static/snaps
 *.env
 __pycache__/
 *.pyc
+Dockerfile
