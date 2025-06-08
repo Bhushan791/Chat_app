@@ -591,7 +591,7 @@ replyPreviewContainer.textContent = '';
                 li.appendChild(nameSpan);
             } else {
                 const kickBtn = document.createElement('button');
-                kickBtn.textContent = 'Kick';
+                kickBtn.textContent = '🦵';
                 kickBtn.classList.add('kick-btn');
                 kickBtn.onclick = () => {
                     if (confirm(`Are you sure you want to kick ${user.nickname}?`)) {
@@ -599,13 +599,13 @@ replyPreviewContainer.textContent = '';
                     }
                 };
                 const muteBtn = document.createElement('button');
-                muteBtn.textContent = 'Mute';
+                muteBtn.textContent = '🔇';
                 muteBtn.classList.add('mute-btn');
                 muteBtn.onclick = () => {
                     socket.emit('admin_mute', { nickname: user.nickname });
                 };
                 const unmuteBtn = document.createElement('button');
-                unmuteBtn.textContent = 'Unmute';
+                unmuteBtn.textContent = '🔊';
                 unmuteBtn.classList.add('unmute-btn');
                 unmuteBtn.onclick = () => {
                     socket.emit('admin_unmute', { nickname: user.nickname });

@@ -2129,9 +2129,48 @@ padding-left: 10px;
 
 
 
+.message-text {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+  font-weight: 500;
+  /* ADD THESE LINES: */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  max-width: 100%;
+}
 
+.message-input {
+  flex: 1;
+  padding: 0.8rem 1.2rem;
+  border: 2px solid var(--purple-200);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  background: var(--white);
+  transition: all var(--transition-normal);
+  resize: none;
+  max-height: 99px;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  /* ADD THESE LINES: */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
 
+.message-content {
+  background: var(--white);
+  border-radius: var(--radius-2xl);
+  padding: 1rem 1.2rem;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--gray-200);
+  position: relative;
+  transition: all var(--transition-normal);
+  /* ADD THESE LINES: */
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
 
-
-/* dark mode  */
-
+/* dark mode functionality-css  */
+/* """to be implemented soon""" */
